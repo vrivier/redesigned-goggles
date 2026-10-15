@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon interface API</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 40px 16px;
+      font-family: system-ui, sans-serif;
+      background: #f3f5f9;
+      color: #1f2937;
+    }
+
+    main {
+      max-width: 720px;
+      margin: auto;
+      padding: 28px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px #0000000d;
+    }
+
+    h1 { margin-top: 0; font-size: 26px; }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 16px;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    pre {
+      padding: 16px;
+      min-height: 70px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    #status { margin-top: 16px; }
+    .error { color: #b91c1c; }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Mon interface API</h1>
+    <p>Saisis un message et envoie-le à ton API.</p>
+
+    <form id="api-form">
+      <label for="message">Message</label>
+      <textarea
+        id="message"
+        placeholder="Écris ton message ici..."
+        required
+      ></textarea>
+
+      <button id="submit" type="submit">
+        Envoyer
+      </button>
+    </form>
+
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <label for="response">Réponse JSON</label>
+    <pre id="response">La réponse apparaîtra ici.</pre>
+  </main>
+
+  <script>
+    // Remplace cette URL par celle de ton API Render
+    // et ajoute le chemin réel de ton endpoint POST.
+    const API_URL = "/process";
+
+    const form = document.getElementById("api-form");
+    const messageInput = document.getElementById("message");
+    const button = document.getElementById("submit");
+    const status = document.getElementById("status");
+    const responseBox = document.getElementById("response");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const message = messageInput.value.trim();
+
+      if (!message) return;
+
+      button.disabled = true;
+      status.className = "";
+      status.textContent = "Envoi de la requête...";
+      responseBox.textContent = "";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const raw = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = raw;
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            `Erreur HTTP ${response.status} : ` +
+            (typeof data === "string"
+              ? data
+              : JSON.stringify(data))
+          );
+        }
+
+        responseBox.textContent =
+          typeof data === "string"
+            ? data
+            : JSON.stringify(data, null, 2);
+
+        status.textContent = "Requête réussie.";
+      } catch (error) {
+        status.className = "error";
+        status.textContent =
+          "Impossible de terminer la requête : " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

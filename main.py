@@ -2,7 +2,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # Modèle des données reçues
@@ -10,10 +15,9 @@ class RequestData(BaseModel):
     message: str
 
 
-# Vérifier que l'API fonctionne
-@app.get("/")
-def home():
-    return {"status": "ok", "message": "API opérationnelle"}
+@app.get("/", include_in_schema=False)
+async def home():
+    return FileResponse("static/index.html")
 
 
 # Recevoir une requête et retourner un résultat
