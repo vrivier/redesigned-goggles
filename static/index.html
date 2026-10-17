@@ -133,15 +133,18 @@
         </button>
       </div>
 
-      <p>Saisis un message et envoie-le à ton API.</p>
+      <p>Saisis un nombre et envoie-le à ton API.</p>
 
       <form id="api-form">
-        <label for="message">Message</label>
-        <textarea
-          id="message"
-          placeholder="Écris ton message ici..."
+        <label for="nombre">Nombre</label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="number"
+          step="any"
+          placeholder="Entre un nombre..."
           required
-        ></textarea>
+        >
 
         <button id="submit" type="submit">Envoyer</button>
       </form>
@@ -166,7 +169,7 @@
     const loginForm = document.getElementById("login-form");
     const loginButton = document.getElementById("login-submit");
     const form = document.getElementById("api-form");
-    const messageInput = document.getElementById("message");
+    const nombreInput = document.getElementById("nombre");
     const button = document.getElementById("submit");
     const logoutButton = document.getElementById("logout");
     const welcome = document.getElementById("welcome");
@@ -235,13 +238,16 @@
       }
     });
 
-    // Envoi du message à l'API
+    // Envoi du nombre à l'API
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const message = messageInput.value.trim();
+      const nombre = nombreInput.valueAsNumber;
 
-      if (!message) return;
+      if (!Number.isFinite(nombre)) {
+        setStatus("Entre un nombre valide.", true);
+        return;
+      }
 
       button.disabled = true;
       setStatus("Envoi de la requête...");
@@ -253,7 +259,7 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ nombre })
         });
 
         // Session expirée : retour à l'écran de connexion
