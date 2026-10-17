@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 class RequestData(BaseModel):
-    message: str = Field(max_length=5000)
+    nombre: float
 
 
 # Ton endpoint de traitement est protégé.
@@ -16,10 +16,4 @@ def process(
     data: RequestData,
     username: CurrentUser,
 ):
-    # Plus tard, ton appel à Modal ira ici.
-    result = {
-        "received": data.message,
-        "result": f"Traitement effectué : {data.message}",
-    }
-
-    return result
+    return {"resultat": data.nombre * 2}
