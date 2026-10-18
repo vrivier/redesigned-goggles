@@ -14,7 +14,7 @@ MODAL_TOKEN_SECRET = os.environ["MODAL_TOKEN_SECRET"]
 
 
 class RequestData(BaseModel):
-    nombre: float
+    message: str
 
 
 # Ton endpoint de traitement est protégé.
@@ -34,7 +34,7 @@ async def process(
             response = await client.post(
                 MODAL_URL,
                 headers=headers,
-                json={"nombre": data.nombre},
+                json={"fen": data.message},
             )
             response.raise_for_status()
 
@@ -49,6 +49,6 @@ async def process(
         raise HTTPException(status_code=502, detail="Impossible de joindre le service Modal.")
 
     return {
-        "received": data.nombre,
+        "received": data.message,
         "result": response.json(),
     }
