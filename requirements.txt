@@ -3,3 +3,4 @@ uvicorn[standard]
 itsdangerous
 pwdlib[argon2]
 httpx
+modal

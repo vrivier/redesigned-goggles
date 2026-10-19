@@ -15,6 +15,7 @@ MODAL_TOKEN_SECRET = os.environ["MODAL_TOKEN_SECRET"]
 
 class RequestData(BaseModel):
     message: str
+    question: str | None = None
 
 
 # Ton endpoint de traitement est protégé.
@@ -29,12 +30,16 @@ async def process(
         "Content-Type": "application/json",
     }
 
+    payload = {"fen": data.message}
+    if data.question:
+        payload["prompt"] = data.question
+
     try:
         async with httpx.AsyncClient(timeout=180.0) as client:
             response = await client.post(
                 MODAL_URL,
                 headers=headers,
-                json={"fen": data.message},
+                json=payload,
             )
             response.raise_for_status()
 

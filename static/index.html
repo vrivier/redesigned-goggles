@@ -97,7 +97,7 @@
 
 <body>
   <main>
-    <h1>Mon interface API</h1>
+    <h1>Reinalyse</h1>
 
     <!-- Connexion -->
     <section id="login-section" hidden>
@@ -133,15 +133,22 @@
         </button>
       </div>
 
-      <p>Saisis un message et envoie-le à ton API.</p>
+      <p>Saisis le FEN d'une position que tu souhaiterais analyser.</p>
 
       <form id="api-form">
-        <label for="message">Message</label>
+        <label for="message">FEN</label>
         <textarea
           id="message"
-          placeholder="Écris ton message ici..."
+          placeholder="Écris ton FEN ici..."
           required
         ></textarea>
+
+        <label for="question">Question (facultatif)</label>
+        <input
+          id="question"
+          name="question"
+          placeholder="Écris ta question ici..."
+        >
 
         <button id="submit" type="submit">Envoyer</button>
       </form>
@@ -167,6 +174,7 @@
     const loginButton = document.getElementById("login-submit");
     const form = document.getElementById("api-form");
     const messageInput = document.getElementById("message");
+    const questionInput = document.getElementById("question");
     const button = document.getElementById("submit");
     const logoutButton = document.getElementById("logout");
     const welcome = document.getElementById("welcome");
@@ -253,7 +261,10 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ message })
+          body: JSON.stringify({
+            message,
+            question: questionInput.value.trim() || null
+          })
         });
 
         // Session expirée : retour à l'écran de connexion
